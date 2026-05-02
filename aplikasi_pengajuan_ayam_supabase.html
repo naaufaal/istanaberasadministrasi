@@ -1,0 +1,543 @@
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --hijau: #1a7a4a; --hijau-muda: #e8f5ee; --hijau-mid: #4caf7d;
+  --kuning: #f5a623; --kuning-muda: #fff8e1;
+  --teks: #1a2e1a; --teks2: #4a6050; --bg: #f4faf6;
+  --putih: #ffffff; --border: #c8e0d0;
+}
+body { font-family: 'Georgia', serif; background: var(--bg); color: var(--teks); }
+.app { max-width: 900px; margin: 0 auto; padding: 14px; }
+.header { background: var(--hijau); color: white; padding: 16px 20px; border-radius: 14px; margin-bottom: 16px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.header h1 { font-size: 19px; font-weight: bold; }
+.header .sub { font-size: 12px; opacity: 0.75; margin-top: 3px; }
+.conn-badge { font-size: 11px; padding: 4px 10px; border-radius: 50px; background: rgba(255,255,255,0.15); }
+.conn-badge.ok { background: rgba(100,255,150,0.25); }
+.conn-badge.err { background: rgba(255,100,100,0.25); }
+.tabs { display: flex; gap: 8px; margin-bottom: 14px; flex-wrap: wrap; }
+.tab { padding: 9px 18px; border-radius: 50px; border: 1.5px solid var(--border); background: white; color: var(--teks2); font-size: 13px; cursor: pointer; transition: all 0.2s; }
+.tab.active { background: var(--hijau); color: white; border-color: var(--hijau); }
+.section { display: none; } .section.active { display: block; }
+.card { background: white; border-radius: 14px; border: 1px solid var(--border); padding: 16px; margin-bottom: 14px; }
+.card-title { font-size: 14px; font-weight: bold; color: var(--hijau); margin-bottom: 12px; border-bottom: 1px solid var(--hijau-muda); padding-bottom: 7px; display: flex; justify-content: space-between; align-items: center; }
+label { font-size: 12px; color: var(--teks2); display: block; margin-bottom: 3px; margin-top: 8px; }
+input[type=text], input[type=date], input[type=number] {
+  width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 10px;
+  font-size: 15px; background: white; color: var(--teks); outline: none; transition: border 0.2s;
+}
+input:focus { border-color: var(--hijau-mid); }
+.row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+@media(max-width:520px){ .row2{grid-template-columns:1fr;} }
+.table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; font-size: 12px; min-width: 580px; }
+thead tr { background: var(--hijau); color: white; }
+th { padding: 9px 6px; text-align: center; font-weight: normal; font-size: 12px; }
+th:nth-child(2) { text-align: left; padding-left: 10px; }
+td { padding: 7px 5px; text-align: center; border-bottom: 1px solid var(--hijau-muda); }
+td:nth-child(2) { text-align: left; padding-left: 10px; font-weight: bold; color: var(--hijau); font-size: 12px; }
+td input[type=number] { border: 1px solid var(--border); border-radius: 6px; padding: 5px 3px; font-size: 12px; width: 52px; text-align: center; }
+tr:nth-child(even) td { background: #f9fefb; }
+tr:hover td { background: var(--hijau-muda); }
+.total-row td { background: var(--kuning-muda) !important; font-weight: bold; border-top: 2px solid var(--kuning); font-size: 12px; }
+.btn { padding: 11px 20px; border-radius: 50px; border: none; font-size: 14px; cursor: pointer; transition: all 0.18s; font-family: inherit; display: inline-flex; align-items: center; gap: 6px; }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+.btn-primary { background: var(--hijau); color: white; }
+.btn-primary:hover:not(:disabled) { background: #155e38; }
+.btn-excel { background: #1d6f42; color: white; }
+.btn-excel:hover:not(:disabled) { background: #155233; }
+.btn-nota { background: #8B6914; color: white; }
+.btn-nota:hover { background: #6b5010; }
+.btn-secondary { background: white; color: var(--hijau); border: 1.5px solid var(--hijau); }
+.btn-secondary:hover { background: var(--hijau-muda); }
+.btn-sm { padding: 7px 13px; font-size: 12px; }
+.btn-danger { background: #fee; color: #c00; border: 1px solid #fcc; }
+.actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.nota-box { background: #fffde7; border: 2px dashed #f5a623; border-radius: 12px; padding: 16px; font-size: 13px; line-height: 2; white-space: pre-wrap; font-family: 'Courier New', monospace; }
+.arsip-item { background: white; border: 1px solid var(--border); border-radius: 10px; padding: 12px; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+.arsip-item .info { font-size: 13px; }
+.arsip-item .tanggal { font-size: 11px; color: var(--teks2); margin-top: 2px; }
+.badge { background: var(--hijau-muda); color: var(--hijau); padding: 2px 9px; border-radius: 50px; font-size: 11px; }
+.badge-cloud { background: #e3f2fd; color: #1565c0; padding: 2px 9px; border-radius: 50px; font-size: 11px; }
+.empty { text-align: center; color: var(--teks2); padding: 28px; font-size: 13px; }
+.ringkasan { display: grid; grid-template-columns: repeat(auto-fit,minmax(130px,1fr)); gap: 8px; margin-top: 12px; }
+.ring-item { background: var(--hijau-muda); border-radius: 10px; padding: 10px; text-align: center; }
+.ring-item .label { font-size: 10px; color: var(--teks2); }
+.ring-item .val { font-size: 16px; font-weight: bold; color: var(--hijau); margin-top: 3px; }
+.harga-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(155px,1fr)); gap: 10px; }
+.info-box { background: var(--hijau-muda); border-left: 3px solid var(--hijau); border-radius: 0 8px 8px 0; padding: 9px 12px; font-size: 12px; color: var(--teks2); margin-bottom: 12px; }
+.export-box { background: #e8f5e9; border: 1px solid #a5d6a7; border-radius: 10px; padding: 12px; margin-top: 12px; }
+.export-box .title { font-size: 13px; font-weight: bold; color: #1b5e20; margin-bottom: 6px; }
+.toast { position: fixed; bottom: 20px; right: 20px; padding: 12px 20px; border-radius: 10px; font-size: 13px; font-family: Georgia, serif; z-index: 999; transition: opacity 0.4s; }
+.toast.success { background: #1a7a4a; color: white; }
+.toast.error { background: #c62828; color: white; }
+.loading { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(255,255,255,0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+</style>
+
+<div class="app">
+  <div class="header">
+    <div>
+      <h1>🐔 Pengajuan Bahan Dapur</h1>
+      <div class="sub" id="tgl-header"></div>
+    </div>
+    <div class="conn-badge" id="conn-badge">⏳ Menghubungkan...</div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="gotoTab('entry')">✏️ Entry Data</button>
+    <button class="tab" onclick="gotoTab('nota')">📋 Nota Ringkas</button>
+    <button class="tab" onclick="gotoTab('arsip')">🗂️ Arsip</button>
+  </div>
+
+  <div class="section active" id="tab-entry">
+    <div class="card">
+      <div class="card-title">Info Pengajuan</div>
+      <div class="row2">
+        <div>
+          <label>Tanggal Mulai (Senin)</label>
+          <input type="date" id="tgl-mulai" onchange="updateHariLabel()">
+        </div>
+        <div>
+          <label>Nama / Unit Pengaju</label>
+          <input type="text" id="nama-unit" placeholder="contoh: Dapur Kantor">
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Harga Satuan per Jenis (Rp/kg)</div>
+      <div class="harga-grid" id="harga-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Data Pengajuan — 7 Hari</div>
+      <div class="info-box">Isi jumlah (kg) per jenis ayam untuk setiap hari.</div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>No</th><th>Jenis Ayam</th>
+              <th id="h1">Sen</th><th id="h2">Sel</th><th id="h3">Rab</th>
+              <th id="h4">Kam</th><th id="h5">Jum</th><th id="h6">Sab</th><th id="h7">Min</th>
+              <th>Total kg</th><th>Total Rp</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+          <tfoot>
+            <tr class="total-row">
+              <td colspan="2">TOTAL</td>
+              <td id="tot-h1">0</td><td id="tot-h2">0</td><td id="tot-h3">0</td>
+              <td id="tot-h4">0</td><td id="tot-h5">0</td><td id="tot-h6">0</td><td id="tot-h7">0</td>
+              <td id="tot-kg">0</td><td id="tot-rp">Rp 0</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+      <div class="ringkasan" id="ringkasan"></div>
+
+      <div class="export-box">
+        <div class="title">📊 Export & Simpan</div>
+        <div class="actions" style="margin-top:4px;">
+          <button class="btn btn-primary" id="btn-simpan" onclick="simpanData()">☁️ Simpan ke Cloud</button>
+          <button class="btn btn-excel" onclick="exportExcel()">📥 Download Excel</button>
+          <button class="btn btn-secondary" onclick="printLaporan()">🖨️ Print</button>
+          <button class="btn btn-nota" onclick="gotoTab('nota');buatNota()">📋 Nota</button>
+          <button class="btn btn-secondary btn-sm" onclick="resetForm()">🔄 Reset</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="tab-nota">
+    <div class="card">
+      <div class="card-title">Nota Ringkas</div>
+      <div class="nota-box" id="isi-nota">Silakan isi data di tab "Entry Data" terlebih dahulu.</div>
+      <div class="actions" style="margin-top:12px;">
+        <button class="btn btn-primary" onclick="buatNota()">🔄 Perbarui</button>
+        <button class="btn btn-secondary" onclick="salinNota()">📋 Salin</button>
+        <button class="btn btn-secondary" onclick="printNota()">🖨️ Print</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="section" id="tab-arsip">
+    <div class="card">
+      <div class="card-title">
+        Arsip Cloud
+        <button class="btn btn-secondary btn-sm" onclick="loadArsip()">🔄 Refresh</button>
+      </div>
+      <div id="list-arsip"><div class="empty">⏳ Memuat arsip...</div></div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script>
+const SUPABASE_URL = 'https://jblhbcrgarpntrdaqghd.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpibGhiY3JnYXJwbnRyZGFxZ2hkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzc2NjU3MTcsImV4cCI6MjA5MzI0MTcxN30.f-smj096Wxem3809CFxjMK0S-J4DdN2XjnmZgY78umE';
+const JENIS = ['Karkas Ayam','Kepala Ayam','Ceker Ayam','Ati Ayam','Ampela Ayam'];
+const HARI_SINGKAT = ['Sen','Sel','Rab','Kam','Jum','Sab','Min'];
+const HARI_NAMA = ['Senin','Selasa','Rabu','Kamis','Jumat','Sabtu','Minggu'];
+let harga = {};
+JENIS.forEach(j => harga[j] = 0);
+
+async function sbFetch(path, opts={}) {
+  const res = await fetch(SUPABASE_URL + '/rest/v1/' + path, {
+    ...opts,
+    headers: {
+      'apikey': SUPABASE_KEY,
+      'Authorization': 'Bearer ' + SUPABASE_KEY,
+      'Content-Type': 'application/json',
+      'Prefer': opts.prefer || 'return=minimal',
+      ...(opts.headers||{})
+    }
+  });
+  if (!res.ok) {
+    const err = await res.text();
+    throw new Error(err);
+  }
+  if (res.status === 204 || res.headers.get('content-length') === '0') return null;
+  return res.json();
+}
+
+function toast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = 'toast ' + type;
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => { t.style.opacity='0'; setTimeout(()=>t.remove(), 400); }, 3000);
+}
+
+// FUNGSI LOCAL STORAGE BARU
+function simpanHargaKeLokal() {
+  localStorage.setItem('harga_ayam_terakhir', JSON.stringify(harga));
+}
+
+function muatHargaDariLokal() {
+  const saved = localStorage.getItem('harga_ayam_terakhir');
+  if (saved) {
+    harga = JSON.parse(saved);
+    document.querySelectorAll('#harga-grid input').forEach((inp, i) => {
+      inp.value = harga[JENIS[i]] || '';
+    });
+    hitungSemua();
+  }
+}
+
+function fmt(n) { return 'Rp ' + Math.round(n).toLocaleString('id-ID'); }
+function fmtKg(n) { return parseFloat(n||0).toFixed(1); }
+function fmtRp(n) { return Math.round(n).toLocaleString('id-ID'); }
+
+async function cekKoneksi() {
+  try {
+    await sbFetch('pengajuan_ayam?limit=1', { headers: { 'Prefer': '' } });
+    const badge = document.getElementById('conn-badge');
+    badge.textContent = '🟢 Terhubung ke Supabase';
+    badge.className = 'conn-badge ok';
+  } catch(e) {
+    const badge = document.getElementById('conn-badge');
+    badge.textContent = '🔴 Gagal terhubung';
+    badge.className = 'conn-badge err';
+  }
+}
+
+function init() {
+  document.getElementById('tgl-header').textContent = new Date().toLocaleDateString('id-ID',{weekday:'long',year:'numeric',month:'long',day:'numeric'});
+
+  const hGrid = document.getElementById('harga-grid');
+  JENIS.forEach(j => {
+    const d = document.createElement('div');
+    // UPDATE: Menambahkan simpanHargaKeLokal() pada oninput
+    d.innerHTML = `<label style="font-size:11px;">${j}</label>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span style="font-size:11px;color:var(--teks2);">Rp</span>
+        <input type="number" min="0" step="1000" placeholder="0" style="font-size:14px;"
+          oninput="harga['${j}']=parseFloat(this.value)||0;hitungSemua();simpanHargaKeLokal()" />
+      </div>`;
+    hGrid.appendChild(d);
+  });
+
+  const tbody = document.getElementById('tbody');
+  JENIS.forEach((j,ji) => {
+    const tr = document.createElement('tr');
+    let cells = `<td style="color:var(--teks2);font-size:11px;">${ji+1}</td><td>${j}</td>`;
+    for(let d=0;d<7;d++) {
+      cells += `<td><input type="number" min="0" step="0.5" placeholder="-" id="inp-${ji}-${d}" oninput="hitungSemua()"></td>`;
+    }
+    cells += `<td id="row-kg-${ji}" style="font-weight:bold;">0</td>`;
+    cells += `<td id="row-rp-${ji}" style="font-weight:bold;color:var(--hijau);font-size:11px;">Rp 0</td>`;
+    tr.innerHTML = cells;
+    tbody.appendChild(tr);
+  });
+
+  cekKoneksi();
+  loadArsip();
+  
+  // UPDATE: Memanggil muat harga di akhir inisialisasi
+  muatHargaDariLokal();
+}
+
+function updateHariLabel() {
+  const tgl = document.getElementById('tgl-mulai').value;
+  if(!tgl) return;
+  const base = new Date(tgl);
+  for(let i=0;i<7;i++) {
+    const d = new Date(base); d.setDate(base.getDate()+i);
+    document.getElementById('h'+(i+1)).textContent = HARI_SINGKAT[i]+' '+d.getDate();
+  }
+}
+
+function hitungSemua() {
+  let totHari=[0,0,0,0,0,0,0], totAll=0, totRpAll=0;
+  JENIS.forEach((j,ji) => {
+    let totalKg=0, totalRp=0;
+    for(let d=0;d<7;d++) {
+      const v = parseFloat(document.getElementById(`inp-${ji}-${d}`)?.value)||0;
+      totalKg+=v; totHari[d]+=v;
+    }
+    totalRp = totalKg*(harga[j]||0);
+    totAll+=totalKg; totRpAll+=totalRp;
+    document.getElementById(`row-kg-${ji}`).textContent = fmtKg(totalKg);
+    document.getElementById(`row-rp-${ji}`).textContent = fmt(totalRp);
+  });
+  for(let i=0;i<7;i++) document.getElementById(`tot-h${i+1}`).textContent = totHari[i]>0?fmtKg(totHari[i]):'0';
+  document.getElementById('tot-kg').textContent = fmtKg(totAll);
+  document.getElementById('tot-rp').textContent = fmt(totRpAll);
+  document.getElementById('ringkasan').innerHTML = `
+    <div class="ring-item"><div class="label">Total Kebutuhan</div><div class="val">${fmtKg(totAll)} kg</div></div>
+    <div class="ring-item"><div class="label">Total Biaya</div><div class="val" style="font-size:13px;">${fmt(totRpAll)}</div></div>
+  `;
+}
+
+function getData() {
+  return {
+    tgl_mulai: document.getElementById('tgl-mulai').value,
+    nama_unit: document.getElementById('nama-unit').value||'Dapur',
+    rows: JENIS.map((j,ji) => ({
+      jenis: j,
+      hari: Array.from({length:7},(_,d)=>parseFloat(document.getElementById(`inp-${ji}-${d}`)?.value)||0),
+      harga: harga[j]||0
+    }))
+  };
+}
+
+async function simpanData() {
+  const d = getData();
+  if(!d.tgl_mulai) { toast('Isi tanggal mulai dahulu!', 'error'); return; }
+  const btn = document.getElementById('btn-simpan');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="loading"></span> Menyimpan...';
+  try {
+    await sbFetch('pengajuan_ayam', {
+      method: 'POST',
+      prefer: 'return=minimal',
+      body: JSON.stringify({
+        nama_unit: d.nama_unit,
+        tgl_mulai: d.tgl_mulai,
+        rows: d.rows
+      })
+    });
+    toast('✅ Tersimpan ke cloud!');
+    loadArsip();
+  } catch(e) {
+    toast('❌ Gagal simpan: ' + e.message, 'error');
+  }
+  btn.disabled = false;
+  btn.innerHTML = '☁️ Simpan ke Cloud';
+}
+
+async function loadArsip() {
+  const el = document.getElementById('list-arsip');
+  el.innerHTML = '<div class="empty">⏳ Memuat dari Supabase...</div>';
+  try {
+    const data = await sbFetch('pengajuan_ayam?order=saved_at.desc&limit=50', {
+      headers: { 'Prefer': '' }
+    });
+    if(!data || data.length === 0) {
+      el.innerHTML = '<div class="empty">Belum ada data tersimpan di cloud.</div>';
+      return;
+    }
+    el.innerHTML = data.map(a => {
+      const base = new Date(a.tgl_mulai);
+      const akhir = new Date(base); akhir.setDate(base.getDate()+6);
+      const total = (a.rows||[]).reduce((s,r)=>s+(r.hari||[]).reduce((a,b)=>a+b,0)*r.harga,0);
+      const tglSimpan = new Date(a.saved_at).toLocaleString('id-ID');
+      return `<div class="arsip-item">
+        <div class="info">
+          <strong>${a.nama_unit||'Dapur'}</strong>
+          <span class="badge" style="margin-left:6px;">${base.toLocaleDateString('id-ID')} – ${akhir.toLocaleDateString('id-ID')}</span>
+          <span class="badge-cloud">☁️ cloud</span>
+          <div class="tanggal">Total: ${fmt(total)} | Disimpan: ${tglSimpan}</div>
+        </div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap;">
+          <button class="btn btn-secondary btn-sm" onclick='muatArsip(${JSON.stringify(a).replace(/'/g,"&#39;")})'>📂 Muat</button>
+          <button class="btn btn-excel btn-sm" onclick='muatLaluExport(${JSON.stringify(a).replace(/'/g,"&#39;")})'>📥 Excel</button>
+          <button class="btn btn-danger btn-sm" onclick="hapusArsip('${a.id}')">🗑️</button>
+        </div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="empty">❌ Gagal memuat arsip.<br><small>${e.message}</small></div>`;
+  }
+}
+
+function muatArsip(a) {
+  document.getElementById('tgl-mulai').value = a.tgl_mulai;
+  document.getElementById('nama-unit').value = a.nama_unit||'';
+  updateHariLabel();
+  (a.rows||[]).forEach((r,ji) => {
+    harga[r.jenis] = r.harga||0;
+    (r.hari||[]).forEach((v,d) => {
+      const inp = document.getElementById(`inp-${ji}-${d}`);
+      if(inp) inp.value = v>0?v:'';
+    });
+  });
+  document.querySelectorAll('#harga-grid input').forEach((inp,i) => { inp.value = harga[JENIS[i]]||''; });
+  hitungSemua();
+  gotoTab('entry');
+  toast('✅ Data berhasil dimuat!');
+}
+
+function muatLaluExport(a) {
+  muatArsip(a);
+  setTimeout(exportExcel, 300);
+}
+
+async function hapusArsip(id) {
+  if(!confirm('Hapus data ini dari cloud?')) return;
+  try {
+    await sbFetch(`pengajuan_ayam?id=eq.${id}`, { method: 'DELETE' });
+    toast('🗑️ Data dihapus');
+    loadArsip();
+  } catch(e) {
+    toast('❌ Gagal hapus: ' + e.message, 'error');
+  }
+}
+
+function exportExcel() {
+  const d = getData();
+  if(!d.tgl_mulai) { toast('Isi tanggal mulai dahulu!', 'error'); return; }
+  const base = new Date(d.tgl_mulai);
+  const akhir = new Date(base); akhir.setDate(base.getDate()+6);
+  const tglHari = Array.from({length:7},(_,i)=>{ const x=new Date(base); x.setDate(base.getDate()+i); return x; });
+  const fTgl = dt => dt.toLocaleDateString('id-ID',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const wb = XLSX.utils.book_new();
+  const aoa = [];
+  aoa.push(['LAPORAN PENGAJUAN BAHAN DAPUR — MINGGUAN','','','','','','','','','','','']);
+  aoa.push([`Unit: ${d.nama_unit}     Periode: ${fTgl(base)} s/d ${fTgl(akhir)}`,'','','','','','','','','','','']);
+  aoa.push([]);
+  aoa.push(['No','Jenis Bahan',...HARI_NAMA.map((h,i)=>h+'\n'+tglHari[i].getDate()+'/'+('0'+(tglHari[i].getMonth()+1)).slice(-2)),'Total (kg)','Harga/kg (Rp)','Total (Rp)']);
+  let totH=[0,0,0,0,0,0,0], totKg=0, totRp=0;
+  d.rows.forEach((r,i) => {
+    const tkg=r.hari.reduce((a,b)=>a+b,0);
+    const trp=tkg*r.harga;
+    totKg+=tkg; totRp+=trp;
+    r.hari.forEach((v,j)=>totH[j]+=v);
+    aoa.push([i+1, r.jenis, ...r.hari.map(v=>v>0?v:null), tkg, r.harga||0, trp]);
+  });
+  aoa.push(['','TOTAL', ...totH, totKg, '', totRp]);
+  aoa.push([]);
+  aoa.push(['','','','','Mengetahui,','','','Pengaju,']);
+  aoa.push([]);aoa.push([]);aoa.push([]);
+  aoa.push(['','','','','( _________________ )','','','( _________________ )']);
+  const ws1 = XLSX.utils.aoa_to_sheet(aoa);
+  ws1['!cols'] = [{wch:4},{wch:18},...Array(7).fill({wch:10}),{wch:10},{wch:14},{wch:16}];
+  ws1['!merges'] = [{s:{r:0,c:0},e:{r:0,c:11}},{s:{r:1,c:0},e:{r:1,c:11}}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Laporan Mingguan');
+  const aoa2 = [['NOTA PENGAJUAN DAPUR','','','',''],
+    [`${d.nama_unit}  |  ${fTgl(base)} – ${fTgl(akhir)}`,'','','',''],[],'',
+    ['No','Nama Bahan','Jumlah (kg)','Harga/kg','Total (Rp)']];
+  const valid = d.rows.filter(r=>r.hari.reduce((a,b)=>a+b,0)>0);
+  let totN=0;
+  valid.forEach((r,i)=>{
+    const tkg=r.hari.reduce((a,b)=>a+b,0), trp=tkg*r.harga; totN+=trp;
+    aoa2.push([i+1, r.jenis, tkg, r.harga||0, trp]);
+  });
+  aoa2.push(['','TOTAL','','',totN]);
+  aoa2.push([]);
+  aoa2.push(['','Pengaju,','','Penerima,','']);
+  aoa2.push([]);aoa2.push([]);aoa2.push([]);
+  aoa2.push(['','( _____________ )','','( _____________ )','']);
+  const ws2 = XLSX.utils.aoa_to_sheet(aoa2);
+  ws2['!cols'] = [{wch:5},{wch:20},{wch:13},{wch:14},{wch:18}];
+  ws2['!merges'] = [{s:{r:0,c:0},e:{r:0,c:4}},{s:{r:1,c:0},e:{r:1,c:4}}];
+  XLSX.utils.book_append_sheet(wb, ws2, 'Nota Ringkas');
+  XLSX.writeFile(wb, `Pengajuan_Ayam_${d.tgl_mulai}.xlsx`);
+}
+
+function buatNota() {
+  const d = getData();
+  if(!d.tgl_mulai){ document.getElementById('isi-nota').textContent='Isi tanggal mulai dahulu.'; return; }
+  const base = new Date(d.tgl_mulai);
+  const akhir = new Date(base); akhir.setDate(base.getDate()+6);
+  let txt = `NOTA PENGAJUAN BAHAN DAPUR\n`;
+  txt += `Unit     : ${d.nama_unit}\n`;
+  txt += `Periode : ${base.toLocaleDateString('id-ID')} s/d ${akhir.toLocaleDateString('id-ID')}\n`;
+  txt += `─────────────────────────────────\n`;
+  let total=0;
+  d.rows.forEach(r => {
+    const tkg=r.hari.reduce((a,b)=>a+b,0); if(tkg===0) return;
+    const trp=tkg*r.harga; total+=trp;
+    txt+=`${r.jenis.padEnd(15)} ${fmtKg(tkg).padStart(6)} kg`;
+    if(r.harga>0) txt+=`   Rp ${fmtRp(trp)}`;
+    txt+='\n';
+  });
+  txt+=`─────────────────────────────────\nTOTAL BIAYA          Rp ${fmtRp(total)}\n\nTtd Pengaju : _______________\nTtd Terima  : _______________`;
+  document.getElementById('isi-nota').textContent = txt;
+}
+
+function salinNota() {
+  navigator.clipboard.writeText(document.getElementById('isi-nota').textContent).then(()=>toast('✅ Teks disalin!')).catch(()=>{});
+}
+
+function printNota() {
+  buatNota();
+  const w=window.open('','_blank','width=420,height=540');
+  w.document.write(`<pre style="font-size:14px;padding:24px;font-family:monospace;line-height:1.8;">${document.getElementById('isi-nota').textContent}</pre>`);
+  w.print();
+}
+
+function printLaporan() {
+  const d=getData();
+  if(!d.tgl_mulai){toast('Isi tanggal mulai dahulu.','error');return;}
+  const base=new Date(d.tgl_mulai), akhir=new Date(base); akhir.setDate(base.getDate()+6);
+  const tglHari=Array.from({length:7},(_,i)=>{const x=new Date(base);x.setDate(base.getDate()+i);return x;});
+  let hdrH=tglHari.map((t,i)=>`<th>${HARI_SINGKAT[i]}<br>${t.getDate()}</th>`).join('');
+  let totH=[0,0,0,0,0,0,0],totKg=0,totRp2=0,rows='';
+  d.rows.forEach((r,i)=>{
+    const tkg=r.hari.reduce((a,b)=>a+b,0),trp=tkg*r.harga;
+    totKg+=tkg;totRp2+=trp;r.hari.forEach((v,j)=>totH[j]+=v);
+    rows+=`<tr><td>${i+1}</td><td style="text-align:left">${r.jenis}</td>${r.hari.map(v=>`<td>${v>0?fmtKg(v):'-'}</td>`).join('')}<td><b>${fmtKg(tkg)}</b></td><td>${r.harga>0?'Rp '+fmtRp(r.harga):'-'}</td><td style="color:#1a7a4a"><b>Rp ${fmtRp(trp)}</b></td></tr>`;
+  });
+  const w=window.open('','_blank');
+  w.document.write(`<!DOCTYPE html><html><head><title>Laporan</title>
+  <style>body{font-family:Arial;font-size:11px;padding:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #aaa;padding:6px;text-align:center}thead{background:#1a7a4a;color:white}h2,p{text-align:center}</style></head><body>
+  <h2>LAPORAN PENGAJUAN BAHAN DAPUR</h2><p>${d.nama_unit} | ${base.toLocaleDateString('id-ID')} – ${akhir.toLocaleDateString('id-ID')}</p>
+  <table><thead><tr><th>No</th><th>Jenis</th>${hdrH}<th>Total kg</th><th>Harga/kg</th><th>Total Rp</th></tr></thead><tbody>${rows}</tbody>
+  <tfoot><tr style="background:#fff8e1;font-weight:bold"><td colspan="2">TOTAL</td>${totH.map(v=>`<td>${fmtKg(v)}</td>`).join('')}<td>${fmtKg(totKg)}</td><td></td><td>Rp ${fmtRp(totRp2)}</td></tr></tfoot></table>
+  <br><p>Mengetahui: ___________________ &nbsp;&nbsp;&nbsp; Pengaju: ___________________</p></body></html>`);
+  w.print();
+}
+
+function gotoTab(t) {
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+t).classList.add('active');
+  const idx = ['entry','nota','arsip'].indexOf(t);
+  if(idx>=0) document.querySelectorAll('.tab')[idx].classList.add('active');
+}
+
+function resetForm() {
+  if(!confirm('Reset semua isian?')) return;
+  document.getElementById('tgl-mulai').value='';
+  document.getElementById('nama-unit').value='';
+  document.querySelectorAll('#tbody input').forEach(i=>i.value='');
+  document.querySelectorAll('#harga-grid input').forEach(i=>i.value='');
+  JENIS.forEach(j=>harga[j]=0);
+  hitungSemua();
+  // Opsional: Hapus harga dari localstorage saat reset total? 
+  // Sebaiknya tidak agar Ibu tidak capek ngetik ulang harga meski form di-reset.
+}
+
+init();
+</script>
